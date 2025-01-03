@@ -1,0 +1,93 @@
+import time
+from colorama import Fore, Back, Style, init
+
+# Initialize colorama
+init(autoreset=True)
+
+class Business:
+    def __init__(self, name, income_per_second, cost_to_upgrade):
+        self.name = name
+        self.income_per_second = income_per_second
+        self.cost_to_upgrade = cost_to_upgrade
+        self.automation = False
+
+    def upgrade(self):
+        if player_money >= self.cost_to_upgrade:
+            global player_money
+            player_money -= self.cost_to_upgrade
+            self.income_per_second *= 1.5
+            self.cost_to_upgrade = int(self.cost_to_upgrade * 1.5)
+            print(f"{Fore.GREEN}{self.name} upgraded! New income per second: {Fore.YELLOW}${self.income_per_second}")
+        else:
+            print(f"{Fore.RED}Not enough money to upgrade.")
+
+    def automate(self):
+        if player_money >= self.cost_to_upgrade / 2:
+            global player_money
+            player_money -= self.cost_to_upgrade / 2
+            self.automation = True
+            print(f"{Fore.CYAN}{self.name} is now automated!")
+        else:
+            print(f"{Fore.RED}Not enough money to automate.")
+
+class Game:
+    def __init__(self):
+        self.businesses = [
+            Business(name="Coffee Shop", income_per_second=1, cost_to_upgrade=10),
+            Business(name="Tech Startup", income_per_second=5, cost_to_upgrade=50)
+        ]
+        self.is_playing = True
+
+    def show_status(self):
+        print(f"\n{Fore.MAGENTA}Current money: {Fore.YELLOW}${player_money}")
+        print(f"{Style.BRIGHT}{Fore.BLUE}--- Available Businesses ---")
+        for i, business in enumerate(self.businesses):
+            automation_status = f"{Fore.CYAN}Automated" if business.automation else f"{Fore.YELLOW}Manual"
+            print(f"{Fore.GREEN}{i+1}. {business.name} - Income/sec: {Fore.YELLOW}${business.income_per_second} - {automation_status} - Upgrade cost: {Fore.RED}${business.cost_to_upgrade}")
+
+    def run(self):
+        global player_money
+        player_money = 100  # Starting money
+        
+        while self.is_playing:
+            self.show_status()
+            action = input(f"\n{Fore.WHITE}Choose an action: \n1. Upgrade a business \n2. Automate a business \n3. Exit\n")
+            if action == '1':
+                self.upgrade_business()
+            elif action == '2':
+                self.automate_business()
+            elif action == '3':
+                self.is_playing = False
+                print(f"{Fore.YELLOW}Thanks for playing!")
+            else:
+                print(f"{Fore.RED}Invalid option. Please choose again.")
+
+            # Simulate money earning over time
+            time.sleep(1)
+            for business in self.businesses:
+                if business.automation:
+                    player_money += business.income_per_second
+                else:
+                    player_money += business.income_per_second * 0.1  # Manual earns slower
+
+    def upgrade_business(self):
+        self.show_status()
+        choice = int(input(f"{Fore.WHITE}Choose a business to upgrade (1 or 2): ")) - 1
+        if 0 <= choice < len(self.businesses):
+            self.businesses[choice].upgrade()
+        else:
+            print(f"{Fore.RED}Invalid business selection.")
+
+    def automate_business(self):
+        self.show_status()
+        choice = int(input(f"{Fore.WHITE}Choose a business to automate (1 or 2): ")) - 1
+        if 0 <= choice < len(self.businesses):
+            self.businesses[choice].automate()
+        else:
+            print(f"{Fore.RED}Invalid business selection.")
+
+
+# Start the game
+if __name__ == "__main__":
+    game = Game()
+    game.run()
